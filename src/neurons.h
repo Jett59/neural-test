@@ -13,13 +13,22 @@ class Neuron {
      double threshold;
      std::vector<double> inputs;
      std::vector<int> outputTargets;
-     friend class neuralLayer;
+     void randomize(std::default_random_engine& engine,
+                    std::uniform_real_distribution<double>& distribution);
+     friend class NeuralLayer;
      friend class NeuralNetwork;
 };
 class NeuralLayer {
     protected:
      std::vector<Neuron> neurons;
-     std::uniform_int_distribution<int> distribution;
+     std::uniform_int_distribution<int> intDistribution;
+     std::uniform_real_distribution<double> realDistribution;
+     int numNeurons;
+     void randomize(std::default_random_engine& engine);
+     NeuralLayer(int numNeurons) : numNeurons(numNeurons) {
+       intDistribution = std::uniform_int_distribution<int>(0, numNeurons - 1);
+       realDistribution = std::uniform_real_distribution<double>(0, 512);
+     }
      friend class NeuralNetwork;
 };
 class NeuralNetwork {
