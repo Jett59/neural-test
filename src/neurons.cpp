@@ -10,6 +10,12 @@ namespace neurons {
       this->weight = distribution(engine);
       this->threshold = distribution(engine);
     }
+    void Neuron::createConnections(int numConnections, std::default_random_engine& engine, std::uniform_int_distribution<int>& distribution) {
+      outputTargets.clear();
+      for (int i = 0; i < numConnections; i ++) {
+        outputTargets.push_back(distribution(engine));
+      }
+      }
     void NeuralLayer::randomize(default_random_engine& engine) {
       neurons.clear();
       for (int i = 0; i < numNeurons; i ++) {
@@ -18,10 +24,22 @@ namespace neurons {
         neurons.push_back(neuron);
       }
     }
-NeuralNetwork& NeuralNetwork::addLayer(int numNeurons) {
-  NeuralLayer layer(numNeurons);
-  layer.randomize(randomEngine);
-  layers.push_back(layer);
+    void NeuralLayer::connect(default_random_engine& engine, NeuralLayer& other) {
+      for (int i = 0; i < numNeurons; i ++) {
+        int numConnections = static_cast<int>(realDistribution(engine)*(other.numNeurons/3));
+        neurons[i].createConnections(numConnections, engine, other.intDistribution);
+      }
+    }
+    NeuralNetwork& NeuralNetwork::addLayer(int numNeurons) {
+      NeuralLayer layer(numNeurons);
+      layer.randomize(randomEngine);
+      layers.push_back(layer);
+      return *this;
+}
+NeuralNetwork& NeuralNetwork::connect() {
+  for (int i = 0; i < layers.size() - 1; i ++) {
+    layers[i].connect(randomEngine, layers[i + 1]);
+  }
   return *this;
 }
 }

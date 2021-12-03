@@ -15,6 +15,9 @@ class Neuron {
      std::vector<int> outputTargets;
      void randomize(std::default_random_engine& engine,
                     std::uniform_real_distribution<double>& distribution);
+     void createConnections(int numConnections,
+                            std::default_random_engine& engine,
+                            std::uniform_int_distribution<int>& distribution);
      friend class NeuralLayer;
      friend class NeuralNetwork;
 };
@@ -25,9 +28,10 @@ class NeuralLayer {
      std::uniform_real_distribution<double> realDistribution;
      int numNeurons;
      void randomize(std::default_random_engine& engine);
+     void connect(std::default_random_engine& engine, NeuralLayer& other);
      NeuralLayer(int numNeurons) : numNeurons(numNeurons) {
        intDistribution = std::uniform_int_distribution<int>(0, numNeurons - 1);
-       realDistribution = std::uniform_real_distribution<double>(0, 512);
+       realDistribution = std::uniform_real_distribution<double>(0, 1);
      }
      friend class NeuralNetwork;
 };
@@ -41,6 +45,7 @@ class NeuralNetwork {
           randomEngine = std::default_random_engine(seedGenerator());
        }
        NeuralNetwork& addLayer(int numNeurons);
+       NeuralNetwork& connect();
        void operator()(double inputs[], double outputs[]);
 };
 }
