@@ -18,6 +18,7 @@ class Neuron {
      void createConnections(int numConnections,
                             std::default_random_engine& engine,
                             std::uniform_int_distribution<int>& distribution);
+     double operator()();
      friend class NeuralLayer;
      friend class NeuralNetwork;
 };
@@ -46,7 +47,7 @@ class NeuralNetwork {
        }
        NeuralNetwork& addLayer(int numNeurons);
        NeuralNetwork& connect();
-       void operator()(double inputs[], double outputs[]);
+       void operator()(double* inputs, double* outputs);
 };
 }
 
