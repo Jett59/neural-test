@@ -59,19 +59,16 @@ void NeuralNetwork::operator() (double* inputs, double* outputs) {
     }
     }
 
-double Neuron::optimize(NeuralNetwork& parent, double* inputs, double* outputs, double (*loss) (double* outputs), double learningRate) {
-  parent(inputs, outputs);
-  double currentScore = loss(outputs);
+double Neuron::optimize(NeuralNetwork& parent, double** inputSets, int numInputSets, double* outputs, double (*subLoss) (double* outputs, int set), double (*loss)(NeuralNetwork& network, double** inputSets, int numInputSets, double* outputs, double (*loss) (double* outputs, int set)), double learningRate) {
+  double currentScore = loss(parent, inputSets, numInputSets, outputs, subLoss);
   for (int i = 0; i < outputWeights.size(); i ++) {
     double& weight = outputWeights[i];
     double originalWeight = weight;
     weight = originalWeight - learningRate;
-    parent(inputs, outputs);
-    double newScore = loss(outputs);
+    double newScore = loss(parent, inputSets, numInputSets, outputs, subLoss);
     if (newScore > currentScore) {
       weight = originalWeight + learningRate;
-      parent(inputs, outputs);
-      newScore = loss(outputs);
+      newScore = loss(parent, inputSets, numInputSets, outputs, subLoss);
       if (newScore > currentScore) {
         weight = originalWeight;
         newScore = currentScore;
@@ -81,12 +78,12 @@ double Neuron::optimize(NeuralNetwork& parent, double* inputs, double* outputs, 
   }
   return currentScore;
   }
-double NeuralNetwork::optimize(double* inputs, double* outputs, double (*loss) (double* outputs), double learningRate) {
+double NeuralNetwork::optimize(double** inputSets, int numInputSets, double* outputs, double (*subLoss) (double* outputs, int set), double (*loss) (NeuralNetwork& network, double** inputs, int numInputSets, double* outputs, double(*loss) (double* outputs, int set)), double learningRate) {
   double newScore = 0;
   for (int i = 0; i < layers.size(); i ++) {
     NeuralLayer& layer = layers[i];
     for (int j = 0; j < layer.neurons.size(); j ++) {
-      newScore = layer.neurons[j].optimize(*this, inputs, outputs, loss, learningRate);
+      newScore = layer.neurons[j].optimize(*this, inputSets, numInputSets, outputs, subLoss, loss, learningRate);
     }
     }
     return newScore;

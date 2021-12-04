@@ -15,8 +15,8 @@ class Neuron {
                             std::default_random_engine& engine,
                             std::uniform_real_distribution<double>& distribution);
      double operator()();
-     double optimize(NeuralNetwork& parent, double* inputs, double* outputs,
-                     double (*loss)(double* outputs), double learningRate);
+     double optimize(NeuralNetwork& parent, double** inputSets, int numInputSets, double* outputs, double (*subLoss) (double* outputs, int set),
+                     double (*loss)(NeuralNetwork& network, double** inputSets, int numInputSets, double* outputs, double (*loss) (double* outputs, int set)), double learningRate);
      friend class NeuralLayer;
      friend class NeuralNetwork;
 };
@@ -48,8 +48,8 @@ class NeuralNetwork {
        NeuralNetwork& addLayer(int numNeurons);
        NeuralNetwork& connect();
        void operator()(double* inputs, double* outputs);
-       double optimize(double* inputs, double* outputs,
-                     double (*loss)(double* outputs), double learningRate);
+       double optimize(double** inputs, int numInputs, double* outputs, double (*subLoss) (double* outputs, int set),
+                     double (*loss)(NeuralNetwork& network, double** inputSets, int numInputSets, double* outputs, double (*loss) (double* outputs, int set)), double learningRate);
 };
 }
 
