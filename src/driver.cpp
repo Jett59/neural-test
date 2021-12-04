@@ -3,6 +3,7 @@
 #include <iostream>
 #include <cmath>
 
+using std::cin;
 using std::cout;
 using std::endl;
 
@@ -27,16 +28,21 @@ int main() {
   double outputs[5];
   Trainer trainer;
   double highScore = trainer.train(network, testLossFunction, inputSets, 3, outputs, 2000);
-  network(inputs1, outputs);
   cout << "High score: " << highScore << endl;
-  for (int i = 0; i < 5; i ++) {
-    cout << outputs[i] << endl;
-  }
-  double testInputs [5] = {3, 4, 5, 6, 7};
-  network(testInputs, outputs);
-  cout << "Test answers:" << endl;
-  for (int i = 0; i < 5; i ++) {
-    cout << outputs[i] << endl;
+  cout << "Your turn: type 5 numbers separated by spaces, and the neural "
+          "network will try to multiply them by 2"
+       << endl;
+  for (;;) {
+    cout << "Type: ";
+    double userInputs[5];
+    for (int i = 0; i < 5; i ++) {
+      cin >> userInputs[i];
+    }
+    network(userInputs, outputs);
+    cout << "It got:" << endl;
+    for (int i = 0; i < 5; i ++) {
+      cout << outputs[i] << endl;
+    }
   }
   return 0;
 }
