@@ -9,18 +9,14 @@ class NeuralLayer;
 class NeuralNetwork;
 class Neuron {
     protected:
-     double weight;
-     double threshold;
      std::vector<double> inputs;
-     std::vector<int> outputTargets;
-     void randomize(std::default_random_engine& engine,
-                    std::uniform_real_distribution<double>& distribution);
-     void createConnections(int numConnections,
+     std::vector<double> outputWeights;
+     void randomizeConnections(int numConnections,
                             std::default_random_engine& engine,
-                            std::uniform_int_distribution<int>& distribution);
+                            std::uniform_real_distribution<double>& distribution);
      double operator()();
-     void mutateConnection(std::default_random_engine& engine,
-                           std::uniform_int_distribution<int>& distribution);
+     double optimize(NeuralNetwork& parent, double* inputs, double* outputs,
+                     double (*loss)(double* outputs));
      friend class NeuralLayer;
      friend class NeuralNetwork;
 };
@@ -30,14 +26,14 @@ class NeuralLayer {
      std::uniform_int_distribution<int> intDistribution;
      std::uniform_real_distribution<double> realDistribution;
      int numNeurons;
-     void randomize(std::default_random_engine& engine);
-     void connect(std::default_random_engine& engine, NeuralLayer& other);
+     void randomizeConnections(std::default_random_engine& engine, NeuralLayer& other);
      NeuralLayer(int numNeurons) : numNeurons(numNeurons) {
        intDistribution = std::uniform_int_distribution<int>(0, numNeurons - 1);
        realDistribution = std::uniform_real_distribution<double>(0, 1);
-     }
-     void mutate(std::default_random_engine& engine);
-     void mutate(std::default_random_engine& engine, NeuralLayer& nextLayer);
+       for (int i = 0; i < numNeurons; i ++) {
+         neurons.push_back(Neuron());
+       }
+       }
      friend class NeuralNetwork;
 };
 class NeuralNetwork {
@@ -52,7 +48,8 @@ class NeuralNetwork {
        NeuralNetwork& addLayer(int numNeurons);
        NeuralNetwork& connect();
        void operator()(double* inputs, double* outputs);
-       void mutate();
+       double optimize(double* inputs, double* outputs,
+                     double (*loss)(double* outputs));
 };
 }
 
