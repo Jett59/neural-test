@@ -19,6 +19,8 @@ class Neuron {
                             std::default_random_engine& engine,
                             std::uniform_int_distribution<int>& distribution);
      double operator()();
+     void mutateConnection(std::default_random_engine& engine,
+                           std::uniform_int_distribution<int>& distribution);
      friend class NeuralLayer;
      friend class NeuralNetwork;
 };
@@ -34,6 +36,8 @@ class NeuralLayer {
        intDistribution = std::uniform_int_distribution<int>(0, numNeurons - 1);
        realDistribution = std::uniform_real_distribution<double>(0, 1);
      }
+     void mutate(std::default_random_engine& engine);
+     void mutate(std::default_random_engine& engine, NeuralLayer& nextLayer);
      friend class NeuralNetwork;
 };
 class NeuralNetwork {
@@ -48,6 +52,7 @@ class NeuralNetwork {
        NeuralNetwork& addLayer(int numNeurons);
        NeuralNetwork& connect();
        void operator()(double* inputs, double* outputs);
+       void mutate();
 };
 }
 

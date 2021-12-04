@@ -73,4 +73,24 @@ void NeuralNetwork::operator() (double* inputs, double* outputs) {
       outputs[i] = outputLayer.neurons[i]();
     }
     }
+
+void Neuron::mutateConnection(default_random_engine& engine, uniform_int_distribution<int>& distribution) {
+  uniform_int_distribution<int> existingConnectionDistribution(
+      0, outputTargets.size() - 1);
+  outputTargets[existingConnectionDistribution(engine)] = distribution(engine);
+}
+void NeuralLayer::mutate(default_random_engine& engine) {
+  Neuron& neuron = neurons[intDistribution(engine)];
+  neuron.randomize(engine, realDistribution);
+}
+void NeuralLayer::mutate(default_random_engine& engine, NeuralLayer& nextLayer) {
+  mutate(engine);
+  neurons[intDistribution(engine)].mutateConnection(engine, nextLayer.intDistribution);
+}
+    void NeuralNetwork::mutate() {
+         for (int i = 0; i < layers.size() - 1; i ++) {
+           layers[i].mutate(randomEngine, layers[i + 1]);
+    }
+    layers[layers.size() - 1].mutate(randomEngine);
+    }
 }
