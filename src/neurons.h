@@ -16,7 +16,7 @@ class Neuron {
                             std::uniform_real_distribution<double>& distribution);
      double operator()();
      double optimize(NeuralNetwork& parent, double* inputs, double* outputs,
-                     double (*loss)(double* outputs));
+                     double (*loss)(double* outputs), double learningRate);
      friend class NeuralLayer;
      friend class NeuralNetwork;
 };
@@ -49,7 +49,7 @@ class NeuralNetwork {
        NeuralNetwork& connect();
        void operator()(double* inputs, double* outputs);
        double optimize(double* inputs, double* outputs,
-                     double (*loss)(double* outputs));
+                     double (*loss)(double* outputs), double learningRate);
 };
 }
 

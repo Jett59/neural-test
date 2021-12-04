@@ -12,7 +12,7 @@ namespace neurons {
         NeuralNetwork mutatedNetwork = network;
         mutatedNetwork(inputs, outputs);
         double mutatedScore =
-         mutatedNetwork.optimize(inputs, outputs, loss);
+         mutatedNetwork.optimize(inputs, outputs, loss, bestScore * 0.01);
         if (mutatedScore < bestScore) {
           network = mutatedNetwork;
           bestScore = mutatedScore;

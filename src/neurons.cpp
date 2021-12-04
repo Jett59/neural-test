@@ -59,17 +59,17 @@ void NeuralNetwork::operator() (double* inputs, double* outputs) {
     }
     }
 
-double Neuron::optimize(NeuralNetwork& parent, double* inputs, double* outputs, double (*loss) (double* outputs)) {
+double Neuron::optimize(NeuralNetwork& parent, double* inputs, double* outputs, double (*loss) (double* outputs), double learningRate) {
   parent(inputs, outputs);
   double currentScore = loss(outputs);
   for (int i = 0; i < outputWeights.size(); i ++) {
     double& weight = outputWeights[i];
     double originalWeight = weight;
-    weight = originalWeight - 0.02;
+    weight = originalWeight - learningRate;
     parent(inputs, outputs);
     double newScore = loss(outputs);
     if (newScore > currentScore) {
-      weight = originalWeight + 0.02;
+      weight = originalWeight + learningRate;
       parent(inputs, outputs);
       newScore = loss(outputs);
       if (newScore > currentScore) {
@@ -81,12 +81,12 @@ double Neuron::optimize(NeuralNetwork& parent, double* inputs, double* outputs, 
   }
   return currentScore;
   }
-double NeuralNetwork::optimize(double* inputs, double* outputs, double (*loss) (double* outputs)) {
+double NeuralNetwork::optimize(double* inputs, double* outputs, double (*loss) (double* outputs), double learningRate) {
   double newScore = 0;
   for (int i = 0; i < layers.size(); i ++) {
     NeuralLayer& layer = layers[i];
     for (int j = 0; j < layer.neurons.size(); j ++) {
-      newScore = layer.neurons[j].optimize(*this, inputs, outputs, loss);
+      newScore = layer.neurons[j].optimize(*this, inputs, outputs, loss, learningRate);
     }
     }
     return newScore;
